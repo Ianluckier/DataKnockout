@@ -1,8 +1,13 @@
-# CS513
-# group:
-# 
-# 
-# 
+###############################################################################
+#  Company       : Stevens 
+#  Course        : CS513A
+#  Purpose       : Final project knn algorithm
+#  Team remember : Yiran Li, Anqi Shao, Xuan Li
+#  Date          : November 28,2016
+#  Comments      :
+
+
+#################################################################################
 
 rm(list=ls())
 
@@ -10,9 +15,7 @@ library(class)
 
 # read the dataset into R
 table<-read.csv("/Users/shaoanqi/Desktop/CS513A_Final Project/movie_metadata.csv")
-View(table)
 table1 <- na.omit(table)
-View(table1)
 
 # generate the needed dataset
 critic=table1$num_critic_for_reviews
@@ -30,19 +33,42 @@ aspectRatio=table1$aspect_ratio
 movieFacebookLikes=table1$movie_facebook_likes
 score=table1$imdb_score
 table_new<-data.frame(critic, duration, directorFacebookLikes, actorFacebookLikes, gross, votedUsers, castFacebookLikes, posterFaces, reviews, budget, aspectRatio, movieFacebookLikes, score)
-View(table_new)
 str(table_new)
 head(table_new)
 
+# define max-min normalization function and do normalization
+mmnorm <-function(x,minx,maxx) {z<-((x-minx)/(maxx-minx))
+return(z) 
+}
+
+table_norm <- as.data.frame (         
+  cbind(critic = mmnorm(table_new[,1],min(table_new[,1]),max(table_new[,1]))
+        ,duration = mmnorm(table_new[,2],min(table_new[,2]),max(table_new[,2]))
+        ,directorFacebookLikes = mmnorm(table_new[,3],min(table_new[,3]),max(table_new[,3]))
+        ,actorFacebookLikes = mmnorm(table_new[,4],min(table_new[,4]),max(table_new[,4]))
+        ,gross = mmnorm(table_new[,5],min(table_new[,5]),max(table_new[,5]))
+        ,votedUsers = mmnorm(table_new[,6],min(table_new[,6]),max(table_new[,6]))
+        ,castFacebookLikes = mmnorm(table_new[,7],min(table_new[,7]),max(table_new[,7]))
+        ,posterFaces = mmnorm(table_new[,8],min(table_new[,8]),max(table_new[,8]))
+        ,reviews = mmnorm(table_new[,9],min(table_new[,9]),max(table_new[,9]))
+        ,country = mmnorm(table_new[,10],min(table_new[,10]),max(table_new[,10]))
+        ,budget = mmnorm(table_new[,11],min(table_new[,11]),max(table_new[,11]))
+        ,aspectRatio = mmnorm(table_new[,12],min(table_new[,12]),max(table_new[,12]))
+        ,score = mmnorm(table_new[,13],min(table_new[,13]),max(table_new[,13]))
+  )
+)
+
+View(table_norm)
+
 # generate training dataset and test dataset
-idx=seq(from=1,to=nrow(table_new),by=5)
-test<-table_new[idx,]
-training<-table_new[-idx,]
+idx=seq(from=1,to=nrow(table_norm),by=5)
+test<-table_norm[idx,]
+training<-table_norm[-idx,]
 View(test)
 View(training)
 
 # use knn algorithm to build the model
-predict<-knn(training[,-13],test[,-13],training[,13],k=10)
+predict(i)<-knn(training[,-13],test[,-13],training[,13],k=x(i))
 
 # combine the prediction with the test data and calculate the wrong rate
 results<-cbind(test, predict)

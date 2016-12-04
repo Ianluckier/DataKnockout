@@ -1,5 +1,13 @@
-# CS513
-# group:
+###############################################################################
+#  Company       : Stevens 
+#  Course        : CS513A
+#  Purpose       : Final project knn algorithm
+#  Team remember : Yiran Li, Anqi Shao, Xuan Li
+#  Date          : November 29,2016
+#  Comments      : ANN model for film rate prediction system.
+
+
+#################################################################################
 
 rm(list=ls())
 
@@ -13,9 +21,13 @@ require(grid)
 library(class)
 
 # read the dataset into R
+# please replace the path or put the csv in the same path
 table <- read.csv(".//movie_metadata.csv")
+# view the dataset
 View(table)
+# omit the missing data 
 table1 <- na.omit(table)
+# view the dataset after omit the missing data
 View(table1)
 
 # generate the needed dataset
@@ -42,7 +54,7 @@ head(table_new)
 mmnorm <-function(x,minx,maxx) {z<-((x-minx)/(maxx-minx))
 return(z) 
 }
-
+# normalize our dataset into new table called table_norm
 table_norm <- as.data.frame (         
     cbind(critic = mmnorm(table_new[,1],min(table_new[,1]),max(table_new[,1]))
          ,duration = mmnorm(table_new[,2],min(table_new[,2]),max(table_new[,2]))
@@ -59,14 +71,15 @@ table_norm <- as.data.frame (
          ,score = mmnorm(table_new[,13],min(table_new[,13]),max(table_new[,13]))
   )
 )
-
+# view the table after normalize
 View(table_norm)
 
 # shuffle the rows
-set.seed(9850)
+set.seed(7523)
 g<-runif(nrow(table_norm))
 table_shuffle<-table_norm[order(g),]
 
+# view the table after shuffle
 View(table_shuffle)
 
 # generate training dataset and test dataset
@@ -75,6 +88,8 @@ test <- table_shuffle[idx,]
 training <- table_shuffle[-idx,]
 
 # use neuralnet algorithm to build the model
+# hidden = 6 meanings how many hidden node we choose for this model, we have already test this model when hidden node is 1,3,6,9. Even 12.
+# err.fct = "sse" that is a algorithm when error happend.
 nn = neuralnet(score ~ critic + duration + directorFacebookLikes + actorFacebookLikes + gross + votedUsers + castFacebookLikes + posterFaces + reviews + country + budget + aspectRatio, data = training, hidden = 6, err.fct = "sse", linear.output = FALSE)
 nn
 plot(nn)
@@ -86,22 +101,24 @@ nn$covariate
 training$score
 nn$net.result[[1]]
 
-# calculate the wrong rate
+# calculate the traing  wrong rate,we define that when the abs different between predict and acutlly value greater than 0.1, we believe this predict result is wrong.
 misClassificationError_train = mean(abs(training$score - nn$net.result[[1]]) > 0.1)
 misClassificationError_train
 OutputVsPred_train = cbind(training$score,nn1)
+# The traing wrong rate is 
 OutputVsPred_train
 
 # test the model by test dataset
 new.output = compute(nn, covariate = matrix(as.matrix(test[,-10]), byrow = TRUE, ncol = 12))
 
-# calculate the wrong rate
+# calculate the test wrong rate, we define that when the abs different between predict and acutlly value greater than 0.1, we believe this predict result is wrong.
 misClassificationError_test = mean(abs(test$score - nn$net.result[[1]]) > 0.1)
 misClassificationError_test
 OutputVsPred_test=cbind(test$score, nn2)
+# The test wrong rate is 
 OutputVsPred_test
 
-# have visual understanding of how different covariates influence the target variable 
+# give you a more direct way to show the different covariates influence the target variable 
 par(mfrow = c(3, 3))
 gwplot(nn,selected.covariate = "critic")
 gwplot(nn,selected.covariate = "duration")

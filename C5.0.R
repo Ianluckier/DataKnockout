@@ -1,16 +1,21 @@
-# CS513
-# group:
-# 
-# 
-# 
+###############################################################################
+#  Company       : Stevens 
+#  Course        : CS513A
+#  Purpose       : Final project knn algorithm
+#  Team remember : Yiran Li, Anqi Shao, Xuan Li
+#  Date          : November 29,2016
+#  Comments      :
+
+
+#################################################################################
 
 rm(list=ls())
-
+# install package 'c50'
 install.packages("C50")
 require(C50)
+
 # read the dataset into R
 table<-read.csv("/Users/shaoanqi/Desktop/CS513A_Final Project/movie_metadata.csv")
-View(table)
 table1 <- na.omit(table)
 
 # generate the needed dataset
@@ -34,7 +39,7 @@ str(table_new)
 head(table_new)
 
 
-set.seed(2000)
+set.seed(9850)
 g<-runif(nrow(table_new))
 table_new2<-table_new[order(g),]
 View(table_new2)
@@ -44,6 +49,7 @@ training<-table_new2[-idx,]
 training$score<- factor(training$score)
 m1<-C5.0(training[,-13], training$score)
 m1
+minn <-min(gross)
 summary(m1)
 
 # test-how well as the algorithm does as classify
